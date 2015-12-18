@@ -14,14 +14,15 @@ mpc_parser_t* Expr = mpc_new("expr");
 mpc_parser_t* Lispy = mpc_new("lispy");
 
 mpca_lang(MPCA_LANG_DEFAULT,
-  "                                                     \
-    number   : /-?[0-9]+/ ;                             \
-    operator : '+' | '-' | '*' | '/' ;                  \
-    expr     : <number> | '(' <operator> <expr>+ ')' ;  \
-    lispy    : /^/ <operator> <expr>+ /$/ ;             \
+  "                                                                 \
+    number   : /-?[0-9]+/ ;                             	    \
+    operator : '+' | '-' | '*' | '/' | '%' | '^' ;      \
+    expr     : <number> | '(' <operator> <expr>+ ')' ;              \
+    lispy    : /^/ <expr>+ /$/ ;                         \
   ",
   Number, Operator, Expr, Lispy);
 
+// e.g. Alispir expression: (+ 1 2)
 puts("Alispir Version 0.1");
 puts("Press Ctrl+C to Exit");
 
