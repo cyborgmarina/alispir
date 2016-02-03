@@ -9,7 +9,8 @@
 
 int main(int argc, char** argv) {
 
-  mpc_parser_t* Number = mpc_new("number");
+  mpc_parser_t* Integer = mpc_new("integer");
+  mpc_parser_t* Float = mpc_new("float");
   mpc_parser_t* Operator = mpc_new("operator");
   mpc_parser_t* Expr = mpc_new("expr");
   mpc_parser_t* Lispy = mpc_new("lispy");
@@ -17,13 +18,14 @@ int main(int argc, char** argv) {
   // Grammar
   // e.g. Alispir expression: (add 1 2)
   mpca_lang(MPCA_LANG_DEFAULT,
-    "                                                                 \
-      number   : /-?[0-9]+(\.[0-9]+)?/ ;                             	    \
-      operator : /add/ | /sub/ | /mul/ | /div/ | /mod/ | /pow/;      \
-      expr     : <number> | '(' <operator> <expr>+ ')' ;              \
-      lispy    : /^/ <expr>+ /$/ ;                         \
+    "                                                               \
+      integer  : /-?[0-9]+/ ;                             	        \
+      float    : /-?[0-9]+(\\.[0-9])+/ ;                            \
+      operator : /add/ | /sub/ | /mul/ | /div/ | /mod/ | /pow/;     \
+      expr     : <float> | <integer> | '(' <operator> <expr>+ ')'; \
+      lispy    : /^/ <expr>+ /$/ ;                                  \
     ",
-    Number, Operator, Expr, Lispy);
+    Integer, Float, Operator, Expr, Lispy);
 
   puts("Alispir Version 0.1");
   puts("Press Ctrl+C to Exit");
@@ -48,7 +50,7 @@ int main(int argc, char** argv) {
 
     }
 
-    mpc_cleanup(4, Number, Operator, Expr, Lispy);
+    mpc_cleanup(5, Integer, Float, Operator, Expr, Lispy);
     return 0;
 
 }
