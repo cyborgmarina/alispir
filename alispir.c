@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
   mpc_parser_t* Lispy = mpc_new("lispy");
 
   // Grammar
-  // e.g. Alispir expression: (+ 1 2)
+  // e.g. Alispir expression: (add 1 2)
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                 \
       number   : /-?[0-9]+/ ;                             	    \
