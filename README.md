@@ -3,11 +3,6 @@ alispir
 ***
 
  This is my on-going toy implementation of a LISP.
- 
- Compiling:
- ```
- cc -std=c99 -Wall alispir.c mpc.c -ledit -lm -o alispir
- ```
 
 References:
 --------
