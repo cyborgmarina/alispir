@@ -2,7 +2,7 @@ alispir
 =======
 ***
 
- This is my on-going toy implementation of LISP.
+ This is my on-going toy implementation of a LISP.
  
  Compiling:
  ```
