@@ -9,7 +9,7 @@ alispir
  cc -std=c99 -Wall alispir.c mpc.c -ledit -lm -o alispir
  ```
 
-Resources:
+References:
 --------
 
  * [Build Your Own Lisp](http://www.buildyourownlisp.com/)
