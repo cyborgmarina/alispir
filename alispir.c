@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     ",
     Integer, Float, Operator, Expr, Lispy);
 
-  puts("Alispir Version 0.2");
+  puts("Alispir Version 0.3");
   puts("Press Ctrl+C to Exit");
 
   // REPL
