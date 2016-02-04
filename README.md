@@ -4,7 +4,7 @@ alispir
 
  This is my on-going toy implementation of LISP.
  
- Right now I'm compiling it by using:
+ Compiling:
  ```
  cc -std=c99 -Wall alispir.c mpc.c -ledit -lm -o alispir
  ```
