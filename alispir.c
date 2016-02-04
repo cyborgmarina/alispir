@@ -62,11 +62,11 @@ int main(int argc, char** argv) {
   // e.g. Alispir expression: (add mul(4 4) 2)
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                                               \
-      integer  : /-?[0-9]+/ ;                             	        \
+      integer  : /-?[0-9]+/ ;                             	    \
       float    : /-?[0-9]+(\\.[0-9])+/ ;                            \
-      operator : /add/ | /sub/ | /mul/ | /div/ | /mod/;     \
-      expr     : <float> | <integer> | '(' <operator> <expr>+ ')'; \
-      lispy    : /^/ '(' <operator> <expr>+ ')' /$/ ;                                  \
+      operator : /add/ | /sub/ | /mul/ | /div/ | /mod/;    	    \
+      expr     : <float> | <integer> | '(' <operator> <expr>+ ')';  \
+      lispy    : /^/ '(' <operator> <expr>+ ')' /$/ ;               \
     ",
     Integer, Float, Operator, Expr, Lispy);
 
