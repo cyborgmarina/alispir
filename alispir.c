@@ -32,7 +32,7 @@ float eval_op_float(float x, char* op, float y) {
 	if (strcmp(op, "sub") == 0) { return x - y; }
 	if (strcmp(op, "mul") == 0) { return x * y; }
 	if (strcmp(op, "div") == 0) { return x / y; }
-//	if (strcmp(op, "mod") == 0) { return (float) ((int) x % (int) y); }
+	if (strcmp(op, "mod") == 0) { return (float) ((int) x % (int) y); }
 	return 0;
 }
 
