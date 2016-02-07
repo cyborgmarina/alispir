@@ -7,6 +7,15 @@
 #include "mpc.h"
 
 #define DEBUG 0
+#define IS_INT 0
+#define IS_FLOAT 1
+
+typedef struct eval_s {
+	int typeof_num; 
+	long i_num;
+	float f_num;
+
+} eval_s;
 
 // Evaluate arithmetic operations
 long eval_op(long x, char* op, long y) {
@@ -18,11 +27,57 @@ long eval_op(long x, char* op, long y) {
 	return 0;
 }
 
+float eval_op_float(float x, char* op, float y) {
+	if (strcmp(op, "add") == 0) { return x + y; }
+	if (strcmp(op, "sub") == 0) { return x - y; }
+	if (strcmp(op, "mul") == 0) { return x * y; }
+	if (strcmp(op, "div") == 0) { return x / y; }
+//	if (strcmp(op, "mod") == 0) { return (float) ((int) x % (int) y); }
+	return 0;
+}
+
+eval_s eval_init_op(eval_s x, char* op, eval_s y) {
+	eval_s result; 
+	if(x.typeof_num == IS_INT && y.typeof_num == IS_INT) {
+		result.typeof_num = IS_INT;
+		result.i_num = eval_op(x.i_num, op, y.i_num);
+	} else {
+		result.typeof_num = IS_FLOAT;
+
+		if(x.typeof_num == IS_INT) {
+			x.typeof_num = IS_FLOAT;
+			x.f_num = (float) x.i_num;
+		}
+
+		if(y.typeof_num == IS_INT) {
+			y.typeof_num = IS_FLOAT;
+			y.f_num = (float) y.i_num;
+		}
+
+		result.f_num = eval_op_float(x.f_num, op, y.f_num);
+	}
+
+	return result;
+
+}
+
 // Evaluate Syntax Tree
-long eval(mpc_ast_t* t) {
+eval_s eval(mpc_ast_t* t) {
 
 	if(strstr(t->tag, "integer")) {
-		return atoi(t->contents);
+		eval_s i_calc;
+		i_calc.i_num = atoi(t->contents);
+		i_calc.typeof_num = IS_INT;
+		i_calc.f_num = 0;
+		return i_calc;
+	} 
+
+	if(strstr(t->tag, "float")) {
+		eval_s f_calc;
+		f_calc.f_num = atof(t->contents);
+		f_calc.typeof_num = IS_FLOAT;
+		f_calc.i_num = 0;
+		return f_calc;
 	}
 
 	// Assume the operator is the second child
@@ -38,12 +93,12 @@ long eval(mpc_ast_t* t) {
 
 	// Increase counter, to get the child abstract syntax tree (ast)
 	op_count++;
-	long x = eval(t->children[op_count]);
+	eval_s x = eval(t->children[op_count]);
 
 	// Evaluate every child expression
 	int i = op_count + 1;
 	while(strstr(t->children[i]->tag, "expr")) {
-		x = eval_op(x, op, eval(t->children[i]));
+		x = eval_init_op(x, op, eval(t->children[i]));
 		i++;
 	}
 
@@ -84,8 +139,12 @@ int main(int argc, char** argv) {
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
 	/* on DEBUG mode, it prints the whole tree */
 	if(!DEBUG) {
-		long result = eval(r.output);
-		printf("%li\n", result);
+		eval_s result = eval(r.output);
+		if(result.typeof_num == IS_INT) {
+			printf("%li\n", result.i_num);
+		} else {
+			printf("%f\n", result.f_num);
+		}
 	} else {
 		mpc_ast_print(r.output);
 	}
