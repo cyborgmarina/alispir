@@ -55,9 +55,9 @@ lval lval_num(int type, mpc_ast_t* t) {
 			new_lval.f_num = atof(t->contents);
 			return new_lval;
 			break;
-		case LVAL_ERROR:
+		default:
 			new_lval.type = LVAL_ERROR;
-			new_lval.f_num = atoi(t->contents);
+			new_lval.i_num = LERR_BAD_NUM;
 			return new_lval;
 			break;
 	}
@@ -85,7 +85,7 @@ lval eval_init_op(lval x, char* op, lval y) {
 	lval result; 
 
 	// Error handling
-	if (y.i_num == 0) {
+	if (y.i_num == 0 && strcmp(op, "div") == 0) {
 		result.type = LVAL_ERROR;
 		result.i_num = LERR_DIV_ZERO;
 		return result;
@@ -125,7 +125,7 @@ lval eval(mpc_ast_t* t) {
 		return lval_num(LVAL_FLOAT, t);
 	}
 
-	// Asadde the operator is the second child
+	// Assume the operator is the second child
 	int op_count = 1;
 
 	// If it is the third child, set counter to 2
