@@ -7,19 +7,64 @@
 #include "mpc.h"
 
 #define DEBUG 0
-#define IS_INT 0
-#define IS_FLOAT 1
 
-typedef struct eval_s {
-	int typeof_num; 
+enum { LVAL_INT, LVAL_FLOAT, LVAL_ERROR }; // Enum of possible lval types 
+enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM }; // Enum of possible error types
+
+// Evaluation structure
+typedef struct lval {
+	int type; 
 	long i_num;
 	float f_num;
 
-} eval_s;
+} lval;
 
+// Print result of evaluation
+void lval_print (lval v) {
+	switch (v.type) {
+		case LVAL_INT: printf("%li", v.i_num); break;
+		case LVAL_FLOAT: printf("%f", v.f_num); break;
+		case LVAL_ERROR:
+				 if(v.i_num == LERR_DIV_ZERO) {
+					 printf("Error %li: Division by Zero", v.i_num);
+				 }
+				 if(v.i_num == LERR_BAD_OP) {
+					 printf("Error %li: Invalid Operator", v.i_num);
+				 }
+				 if(v.i_num == LERR_BAD_NUM) {
+					 printf("Error %li: Invalid Number", v.i_num);
+				 }
+				 break;
+	}	
+}
+
+// Print result of evaluation followed by a new line
+void lval_println (lval v) { lval_print(v); putchar('\n'); };
+
+// Parse lval number
+lval lval_num(int type, mpc_ast_t* t) {
+	lval new_lval;
+	switch (type) {
+		case LVAL_INT: 
+			new_lval.type = LVAL_INT;
+			new_lval.i_num = atoi(t->contents);
+			return new_lval;
+			break;
+		case LVAL_FLOAT:
+			new_lval.type = LVAL_FLOAT;
+			new_lval.f_num = atof(t->contents);
+			return new_lval;
+			break;
+		case LVAL_ERROR:
+			new_lval.type = LVAL_ERROR;
+			new_lval.f_num = atoi(t->contents);
+			return new_lval;
+			break;
+	}
+}	
 // Evaluate arithmetic operations
 long eval_op(long x, char* op, long y) {
-	if (strcmp(op, "add") == 0) { return x + y; }
+	if (strcmp(op, "sum") == 0) { return x + y; }
 	if (strcmp(op, "sub") == 0) { return x - y; }
 	if (strcmp(op, "mul") == 0) { return x * y; }
 	if (strcmp(op, "div") == 0) { return x / y; }
@@ -28,7 +73,7 @@ long eval_op(long x, char* op, long y) {
 }
 
 float eval_op_float(float x, char* op, float y) {
-	if (strcmp(op, "add") == 0) { return x + y; }
+	if (strcmp(op, "sum") == 0) { return x + y; }
 	if (strcmp(op, "sub") == 0) { return x - y; }
 	if (strcmp(op, "mul") == 0) { return x * y; }
 	if (strcmp(op, "div") == 0) { return x / y; }
@@ -36,21 +81,29 @@ float eval_op_float(float x, char* op, float y) {
 	return 0;
 }
 
-eval_s eval_init_op(eval_s x, char* op, eval_s y) {
-	eval_s result; 
-	if(x.typeof_num == IS_INT && y.typeof_num == IS_INT) {
-		result.typeof_num = IS_INT;
+lval eval_init_op(lval x, char* op, lval y) {
+	lval result; 
+
+	// Error handling
+	if (y.i_num == 0) {
+		result.type = LVAL_ERROR;
+		result.i_num = LERR_DIV_ZERO;
+		return result;
+	}
+
+	if(x.type == LVAL_INT && y.type == LVAL_INT) {
+		result.type = LVAL_INT;
 		result.i_num = eval_op(x.i_num, op, y.i_num);
 	} else {
-		result.typeof_num = IS_FLOAT;
+		result.type = LVAL_FLOAT;
 
-		if(x.typeof_num == IS_INT) {
-			x.typeof_num = IS_FLOAT;
+		if(x.type == LVAL_INT) {
+			x.type = LVAL_FLOAT;
 			x.f_num = (float) x.i_num;
 		}
 
-		if(y.typeof_num == IS_INT) {
-			y.typeof_num = IS_FLOAT;
+		if(y.type == LVAL_INT) {
+			y.type = LVAL_FLOAT;
 			y.f_num = (float) y.i_num;
 		}
 
@@ -62,25 +115,17 @@ eval_s eval_init_op(eval_s x, char* op, eval_s y) {
 }
 
 // Evaluate Syntax Tree
-eval_s eval(mpc_ast_t* t) {
+lval eval(mpc_ast_t* t) {
 
 	if(strstr(t->tag, "integer")) {
-		eval_s i_calc;
-		i_calc.i_num = atoi(t->contents);
-		i_calc.typeof_num = IS_INT;
-		i_calc.f_num = 0;
-		return i_calc;
+		return lval_num(LVAL_INT, t);
 	} 
 
 	if(strstr(t->tag, "float")) {
-		eval_s f_calc;
-		f_calc.f_num = atof(t->contents);
-		f_calc.typeof_num = IS_FLOAT;
-		f_calc.i_num = 0;
-		return f_calc;
+		return lval_num(LVAL_FLOAT, t);
 	}
 
-	// Assume the operator is the second child
+	// Asadde the operator is the second child
 	int op_count = 1;
 
 	// If it is the third child, set counter to 2
@@ -93,7 +138,7 @@ eval_s eval(mpc_ast_t* t) {
 
 	// Increase counter, to get the child abstract syntax tree (ast)
 	op_count++;
-	eval_s x = eval(t->children[op_count]);
+	lval x = eval(t->children[op_count]);
 
 	// Evaluate every child expression
 	int i = op_count + 1;
@@ -104,6 +149,8 @@ eval_s eval(mpc_ast_t* t) {
 
 	return x;
 }
+
+
 
 int main(int argc, char** argv) {
 
@@ -119,7 +166,7 @@ int main(int argc, char** argv) {
     "                                                               \
       integer  : /-?[0-9]+/ ;                             	    \
       float    : /-?[0-9]+(\\.[0-9])+/ ;                            \
-      operator : /add/ | /sub/ | /mul/ | /div/ | /mod/;    	    \
+      operator : /sum/ | /sub/ | /mul/ | /div/ | /mod/;    	    \
       expr     : <float> | <integer> | '(' <operator> <expr>+ ')';  \
       lispy    : /^/ '(' <operator> <expr>+ ')' /$/ ;               \
     ",
@@ -139,12 +186,8 @@ int main(int argc, char** argv) {
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
 	/* on DEBUG mode, it prints the whole tree */
 	if(!DEBUG) {
-		eval_s result = eval(r.output);
-		if(result.typeof_num == IS_INT) {
-			printf("%li\n", result.i_num);
-		} else {
-			printf("%f\n", result.f_num);
-		}
+		lval result = eval(r.output);
+		lval_println(result);
 	} else {
 		mpc_ast_print(r.output);
 	}
