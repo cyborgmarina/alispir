@@ -84,10 +84,23 @@ float eval_op_float(float x, char* op, float y) {
 // Check for errors 
 lval eval_error(lval x, char* op, lval y) {
 	lval result;
+
+	if(x.type == LVAL_ERROR) {
+		return x;
+	}
+
+	if(y.type == LVAL_ERROR) {
+		return y;
+	}
+	
 	// LERR_DIV_ZERO division by zero
-	if(strcmp(op, "div") == 0 && y.i_num == 0) {
-		result.type = LVAL_ERROR;
-		result.i_num = LERR_DIV_ZERO;
+	if(strcmp(op, "div") == 0) {
+
+		if( (y.type == LVAL_FLOAT && y.f_num == 0) ||
+				(y.type == LVAL_INT && y.i_num == 0) ) {
+			result.type = LVAL_ERROR;
+			result.i_num = LERR_DIV_ZERO;
+		} 
 	}
 	return result;
 }
@@ -154,6 +167,10 @@ lval eval(mpc_ast_t* t) {
 	while(strstr(t->children[i]->tag, "expr")) {
 		x = eval_init_op(x, op, eval(t->children[i]));
 		i++;
+	}
+
+	if(x.type == LVAL_ERROR) {
+		return x;
 	}
 
 	return x;
