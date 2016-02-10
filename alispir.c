@@ -81,13 +81,22 @@ float eval_op_float(float x, char* op, float y) {
 	return 0;
 }
 
-lval eval_init_op(lval x, char* op, lval y) {
-	lval result; 
-
-	// Error handling
-	if (y.i_num == 0 && strcmp(op, "div") == 0) {
+// Check for errors 
+lval eval_error(lval x, char* op, lval y) {
+	lval result;
+	// LERR_DIV_ZERO division by zero
+	if(strcmp(op, "div") == 0 && y.i_num == 0) {
 		result.type = LVAL_ERROR;
 		result.i_num = LERR_DIV_ZERO;
+	}
+	return result;
+}
+
+lval eval_init_op(lval x, char* op, lval y) {
+
+	//Error handling 
+	lval result = eval_error(x, op, y); 
+	if(result.type == LVAL_ERROR) {
 		return result;
 	}
 
