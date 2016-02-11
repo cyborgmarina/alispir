@@ -85,6 +85,7 @@ float eval_op_float(float x, char* op, float y) {
 lval eval_error(lval x, char* op, lval y) {
 	lval result;
 
+	// If one of the operands is actually an error LVAL structure, return it
 	if(x.type == LVAL_ERROR) {
 		return x;
 	}
