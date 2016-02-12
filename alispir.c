@@ -211,17 +211,12 @@ int main(int argc, char** argv) {
 
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-	/* on DEBUG mode, it prints the whole tree */
-	if(!DEBUG) {
-		lval result = eval(r.output);
-		lval_println(result);
-	} else {
-		mpc_ast_print(r.output);
-	}
-    	mpc_ast_delete(r.output);
+	    lval result = eval(r.output);
+	    lval_println(result);
+	    mpc_ast_delete(r.output);
     } else {
-    	mpc_err_print(r.error);
-    	mpc_err_delete(r.error);
+	    mpc_err_print(r.error);
+	    mpc_err_delete(r.error);
     }
 
     free(input);
