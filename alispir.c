@@ -2,19 +2,9 @@
 #include <stdlib.h>
 #include <editline/readline.h>
 #include "mpc.h"
+#include "alispir.h"
 
 #define DEBUG 0
-
-enum { LVAL_INT, LVAL_FLOAT, LVAL_ERROR }; // Enum of possible lval types 
-enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM }; // Enum of possible error types
-
-// Evaluation structure
-typedef struct lval {
-	int type; 
-	long i_num;
-	float f_num;
-
-} lval;
 
 // Print result of evaluation
 void lval_print (lval v) {
@@ -222,5 +212,4 @@ int main(int argc, char** argv) {
 
     mpc_cleanup(5, Integer, Float, Operator, Expr, Lispy);
     return 0;
-
 }
