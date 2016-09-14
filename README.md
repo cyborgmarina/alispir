@@ -4,6 +4,14 @@ alispir
 
  This is my on-going toy implementation of a LISP.
 
+***
+
+For Linux users, you need the libedit library. 
+On Fedora, you can install it using:
+```shellscript
+sudo dnf install libedit-devel
+```
+
 References:
 --------
 

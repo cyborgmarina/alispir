@@ -1,9 +1,6 @@
-// Compiler flags: -std=c99 -Wall alispir.c mpc.c -ledit -lm -o alispir
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <editline/readline.h>
-
 #include "mpc.h"
 
 #define DEBUG 0
