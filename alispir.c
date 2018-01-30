@@ -19,19 +19,23 @@ typedef struct lval {
 // Print result of evaluation
 void lval_print (lval v) {
 	switch (v.type) {
-		case LVAL_INT: printf("%li", v.i_num); break;
-		case LVAL_FLOAT: printf("%f", v.f_num); break;
-		case LVAL_ERROR:
-				 if(v.i_num == LERR_DIV_ZERO) {
-					 printf("Error %li: Division by Zero", v.i_num);
-				 }
-				 if(v.i_num == LERR_BAD_OP) {
-					 printf("Error %li: Invalid Operator", v.i_num);
-				 }
-				 if(v.i_num == LERR_BAD_NUM) {
-					 printf("Error %li: Invalid Number", v.i_num);
-				 }
-				 break;
+	case LVAL_INT: 
+		printf("%li", v.i_num); 
+		break;
+	case LVAL_FLOAT: 
+		printf("%f", v.f_num); 
+		break;
+	case LVAL_ERROR:
+		if (v.i_num == LERR_DIV_ZERO) {
+			printf("Error %li: Division by Zero", v.i_num);
+		}
+		if (v.i_num == LERR_BAD_OP) {
+			printf("Error %li: Invalid Operator", v.i_num);
+		}
+		if (v.i_num == LERR_BAD_NUM) {
+			printf("Error %li: Invalid Number", v.i_num);
+		}
+		break;
 	}	
 }
 
@@ -42,23 +46,24 @@ void lval_println (lval v) { lval_print(v); putchar('\n'); };
 lval lval_num(int type, mpc_ast_t* t) {
 	lval new_lval;
 	switch (type) {
-		case LVAL_INT: 
-			new_lval.type = LVAL_INT;
-			new_lval.i_num = atoi(t->contents);
-			return new_lval;
-			break;
-		case LVAL_FLOAT:
-			new_lval.type = LVAL_FLOAT;
-			new_lval.f_num = atof(t->contents);
-			return new_lval;
-			break;
-		default:
-			new_lval.type = LVAL_ERROR;
-			new_lval.i_num = LERR_BAD_NUM;
-			return new_lval;
-			break;
+	case LVAL_INT: 
+		new_lval.type = LVAL_INT;
+		new_lval.i_num = atoi(t->contents);
+		return new_lval;
+		break;
+	case LVAL_FLOAT:
+		new_lval.type = LVAL_FLOAT;
+		new_lval.f_num = atof(t->contents);
+		return new_lval;
+		break;
+	default:
+		new_lval.type = LVAL_ERROR;
+		new_lval.i_num = LERR_BAD_NUM;
+		return new_lval;
+		break;
 	}
 }	
+
 // Evaluate arithmetic operations
 long eval_op(long x, char* op, long y) {
 	if (strcmp(op, "sum") == 0) { return x + y; }
@@ -83,23 +88,24 @@ lval eval_error(lval x, char* op, lval y) {
 	lval result;
 
 	// If one of the operands is actually an error LVAL structure, return it
-	if(x.type == LVAL_ERROR) {
+	if (x.type == LVAL_ERROR) {
 		return x;
 	}
 
-	if(y.type == LVAL_ERROR) {
+	if (y.type == LVAL_ERROR) {
 		return y;
 	}
 	
 	// LERR_DIV_ZERO division by zero
-	if(strcmp(op, "div") == 0) {
+	if (strcmp(op, "div") == 0) {
 
-		if( (y.type == LVAL_FLOAT && y.f_num == 0) ||
+		if ((y.type == LVAL_FLOAT && y.f_num == 0) ||
 				(y.type == LVAL_INT && y.i_num == 0) ) {
 			result.type = LVAL_ERROR;
 			result.i_num = LERR_DIV_ZERO;
 		} 
 	}
+	
 	return result;
 }
 
@@ -107,22 +113,22 @@ lval eval_init_op(lval x, char* op, lval y) {
 
 	//Error handling 
 	lval result = eval_error(x, op, y); 
-	if(result.type == LVAL_ERROR) {
+	if (result.type == LVAL_ERROR) {
 		return result;
 	}
 
-	if(x.type == LVAL_INT && y.type == LVAL_INT) {
+	if (x.type == LVAL_INT && y.type == LVAL_INT) {
 		result.type = LVAL_INT;
 		result.i_num = eval_op(x.i_num, op, y.i_num);
 	} else {
 		result.type = LVAL_FLOAT;
 
-		if(x.type == LVAL_INT) {
+		if (x.type == LVAL_INT) {
 			x.type = LVAL_FLOAT;
 			x.f_num = (float) x.i_num;
 		}
 
-		if(y.type == LVAL_INT) {
+		if (y.type == LVAL_INT) {
 			y.type = LVAL_FLOAT;
 			y.f_num = (float) y.i_num;
 		}
@@ -137,11 +143,11 @@ lval eval_init_op(lval x, char* op, lval y) {
 // Evaluate Syntax Tree
 lval eval(mpc_ast_t* t) {
 
-	if(strstr(t->tag, "integer")) {
+	if (strstr(t->tag, "integer")) {
 		return lval_num(LVAL_INT, t);
 	} 
 
-	if(strstr(t->tag, "float")) {
+	if (strstr(t->tag, "float")) {
 		return lval_num(LVAL_FLOAT, t);
 	}
 
@@ -149,7 +155,7 @@ lval eval(mpc_ast_t* t) {
 	int op_count = 1;
 
 	// If it is the third child, set counter to 2
-	if(strstr(t->children[2]->tag, "operator")) {
+	if (strstr(t->children[2]->tag, "operator")) {
 		op_count = 2;
 	}
 
@@ -162,12 +168,12 @@ lval eval(mpc_ast_t* t) {
 
 	// Evaluate every child expression
 	int i = op_count + 1;
-	while(strstr(t->children[i]->tag, "expr")) {
+	while (strstr(t->children[i]->tag, "expr")) {
 		x = eval_init_op(x, op, eval(t->children[i]));
 		i++;
 	}
 
-	if(x.type == LVAL_ERROR) {
+	if (x.type == LVAL_ERROR) {
 		return x;
 	}
 
@@ -200,7 +206,7 @@ int main(int argc, char** argv) {
   puts("Press Ctrl+C to Exit");
 
   // REPL
-  while(1) {
+  while (1) {
 
     char* input = readline("alispir> ");
 
@@ -217,10 +223,9 @@ int main(int argc, char** argv) {
     }
 
     free(input);
-
     }
 
     mpc_cleanup(5, Integer, Float, Operator, Expr, Lispy);
     return 0;
-
 }
+
