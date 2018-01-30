@@ -7,7 +7,8 @@
 #define DEBUG 0
 
 // Print result of evaluation
-void lval_print (lval v) {
+void lval_print (lval v) 
+{
 	switch (v.type) {
 	case LVAL_INT: 
 		printf("%li", v.i_num); 
@@ -30,10 +31,13 @@ void lval_print (lval v) {
 }
 
 // Print result of evaluation followed by a new line
-void lval_println (lval v) { lval_print(v); putchar('\n'); };
+void lval_println (lval v) {
+	lval_print(v); putchar('\n');
+};
 
 // Parse lval number
-lval lval_num(int type, mpc_ast_t* t) {
+lval lval_num(int type, mpc_ast_t* t) 
+{
 	lval new_lval;
 	switch (type) {
 	case LVAL_INT: 
@@ -55,7 +59,8 @@ lval lval_num(int type, mpc_ast_t* t) {
 }	
 
 // Evaluate arithmetic operations
-long eval_op(long x, char* op, long y) {
+long eval_op(long x, char* op, long y) 
+{
 	if (strcmp(op, "sum") == 0) { return x + y; }
 	if (strcmp(op, "sub") == 0) { return x - y; }
 	if (strcmp(op, "mul") == 0) { return x * y; }
@@ -64,7 +69,8 @@ long eval_op(long x, char* op, long y) {
 	return 0;
 }
 
-float eval_op_float(float x, char* op, float y) {
+float eval_op_float(float x, char* op, float y) 
+{
 	if (strcmp(op, "sum") == 0) { return x + y; }
 	if (strcmp(op, "sub") == 0) { return x - y; }
 	if (strcmp(op, "mul") == 0) { return x * y; }
@@ -74,10 +80,10 @@ float eval_op_float(float x, char* op, float y) {
 }
 
 // Check for errors 
-lval eval_error(lval x, char* op, lval y) {
+lval eval_error(lval x, char* op, lval y) 
+{
 	lval result;
 
-	// If one of the operands is actually an error LVAL structure, return it
 	if (x.type == LVAL_ERROR) {
 		return x;
 	}
@@ -86,7 +92,6 @@ lval eval_error(lval x, char* op, lval y) {
 		return y;
 	}
 	
-	// LERR_DIV_ZERO division by zero
 	if (strcmp(op, "div") == 0) {
 
 		if ((y.type == LVAL_FLOAT && y.f_num == 0) ||
@@ -99,9 +104,8 @@ lval eval_error(lval x, char* op, lval y) {
 	return result;
 }
 
-lval eval_init_op(lval x, char* op, lval y) {
-
-	//Error handling 
+lval eval_init_op(lval x, char* op, lval y) 
+{
 	lval result = eval_error(x, op, y); 
 	if (result.type == LVAL_ERROR) {
 		return result;
@@ -127,12 +131,11 @@ lval eval_init_op(lval x, char* op, lval y) {
 	}
 
 	return result;
-
 }
 
 // Evaluate Syntax Tree
-lval eval(mpc_ast_t* t) {
-
+lval eval(mpc_ast_t* t) 
+{
 	if (strstr(t->tag, "integer")) {
 		return lval_num(LVAL_INT, t);
 	} 
@@ -172,8 +175,8 @@ lval eval(mpc_ast_t* t) {
 
 
 
-int main(int argc, char** argv) {
-
+int main(int argc, char** argv) 
+{
   mpc_parser_t* Integer = mpc_new("integer");
   mpc_parser_t* Float = mpc_new("float");
   mpc_parser_t* Operator = mpc_new("operator");
