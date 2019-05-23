@@ -8,5 +8,3 @@ typedef struct lval {
 	float f_num;
 
 } lval;
-
-

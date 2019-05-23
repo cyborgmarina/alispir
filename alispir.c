@@ -4,9 +4,6 @@
 #include "mpc.h"
 #include "alispir.h"
 
-#define DEBUG 0
-
-// Print result of evaluation
 void lval_print (lval v) 
 {
 	switch (v.type) {
@@ -86,7 +83,6 @@ float eval_op_float(float x, char* op, float y)
 	return 0;
 }
 
-// Check for errors 
 lval eval_error(lval x, char* op, lval y) 
 {
 	lval result;
